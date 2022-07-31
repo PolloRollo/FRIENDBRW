@@ -1,0 +1,10 @@
+venv
+*.DS_Store
+.vscode
+__pycache__
+*.pyc
+*.csv
+*.zip
+*.bak
+*.bin
+directedlouvain.cpython-38-darwin.so
