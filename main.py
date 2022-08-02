@@ -112,7 +112,7 @@ def friendbrw_cycle(G, t=1, weighted=False, initial=0.01):
     unweighted_adj = nx.to_numpy_array(G, weight=None)
     rec_adj = np.multiply(unweighted_adj, unweighted_adj.T)
     if weighted:
-        weighted_adj = nx.to_numpy_array(G, weight="weight")
+        weighted_adj = nx.to_numpy_array(G, weight='weight')
         sum_weights_adj = weighted_adj + weighted_adj.T
         rec_weighted_adj = np.multiply(rec_adj, sum_weights_adj)
         rec_graph = nx.from_numpy_array(rec_weighted_adj, create_using=nx.Graph())
@@ -129,7 +129,7 @@ def friendbrw_cycle(G, t=1, weighted=False, initial=0.01):
     return True
 
 
-def new_friendbrw(G, t=1, weighted=False, initial=.01):
+def new_friendbrw(G, t=1, weighted=None, initial=.01):
     """FRIENDBRW is a method which...
     :param G: The number to multiply.
     :type G: networkx digraph
@@ -137,8 +137,8 @@ def new_friendbrw(G, t=1, weighted=False, initial=.01):
     :param t: The number of random walks * |E|
     :type t: int
 
-    :param weighted: The multiplier.
-    :type weighted: boolean
+    :param weighted: The name of the multiplier attribute
+    :type weighted: string
 
     :param initial: The inclusivity value
     :type initial: float
@@ -152,11 +152,11 @@ def new_friendbrw(G, t=1, weighted=False, initial=.01):
         for edge in set(set(G.predecessors(node)) & set(G.successors(node))):
             if edge not in completed_nodes:
                 rec_graph.add_edge(node, edge)
-                if weighted:
-                    weightSum = G[node][edge]['weight'] + G[edge][node]['weight']
-                    rec_graph[node][edge]['weight'] = weightSum
+                if weighted is not None:
+                    weightSum = G[node][edge][weighted] + G[edge][node][weighted]
+                    rec_graph[node][edge]['external_weight'] = weightSum
     # Apply CycleRNBRW to the reciprocal subgraph of G
-    cycle_rnbrw(rec_graph, t, weighted, initial)
+    cycle_rnbrw(rec_graph, t, weighted=(weighted is not None), initial=initial)
     # Add the cycle_rnbrw weights to G
     rec_weights = nx.get_edge_attributes(rec_graph, 'cycle_rnbrw')
     nx.set_edge_attributes(G, values=initial, name='friendbrw_cycle')
